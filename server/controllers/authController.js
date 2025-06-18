@@ -10,6 +10,14 @@ const generateAccessToken = (user) => {
     );
 };
 
+const generateAccessTokenFromRefresh = (user) => {
+    return jwt.sign(
+        { id: user.id, username: user.username, role: user.role },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "15m" }
+    );
+};
+
 const generateRefreshToken = (user) => {
     return jwt.sign(
         { id: user._id, username: user.username, role: user.role },
@@ -144,7 +152,7 @@ export const refresh = async (req, res, next) => {
             return res.status(403).json({ message: "Invalid refresh token" });
         }
 
-        const access_token = generateAccessToken(decoded);
+        const access_token = generateAccessTokenFromRefresh(decoded);
 
         res.status(200).json({ access_token });
     } catch (error) {
