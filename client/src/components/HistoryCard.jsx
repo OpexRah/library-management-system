@@ -9,7 +9,8 @@ function HistoryCard({ title, author, issueDate, returnDate, approval }) {
                 </p>
                 {returnDate && (
                     <p className="text-sm text-gray-500">
-                        Returned: {new Date(returnDate).toLocaleDateString()}
+                        Expected Return:{" "}
+                        {new Date(returnDate).toLocaleDateString()}
                     </p>
                 )}
             </div>

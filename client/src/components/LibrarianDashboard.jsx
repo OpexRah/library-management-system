@@ -3,6 +3,7 @@ import BookCard from "./BookCard";
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 import IssuedBooksList from "./IssuedBooksList";
 import IssueRequests from "./IssueRequests";
+import ManageBooks from "./ManageBooks";
 
 function LibrarianDashboard() {
     const [activeTab, setActiveTab] = useState("books");
@@ -74,7 +75,7 @@ function LibrarianDashboard() {
             case "requests":
                 return <IssueRequests />;
             case "manage":
-                return <div> Manage Books (coming soon)</div>;
+                return <ManageBooks />;
             default:
                 return null;
         }
