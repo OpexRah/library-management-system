@@ -13,7 +13,7 @@ function HistoryCard({
     let returnClass = "";
 
     if (returnStatus) {
-        returnText = "Returned";
+        returnText = `Returned on: ${expectedReturn.toLocaleDateString()}`;
         returnClass = "text-green-600 font-medium";
     } else if (expectedReturn) {
         if (expectedReturn >= today) {
