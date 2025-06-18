@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import LoginScreen from "./components/LoginScreen";
+import UserDashboard from "./components/UserDashboard";
+import LibrarianDashboard from "./components/LibrarianDashboard";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 function App() {
     const [screen, setScreen] = useState("loading");
+    const [role, setRole] = useState(null);
 
     useEffect(() => {
         const validateTokens = async () => {
@@ -14,6 +17,7 @@ function App() {
             if (access_token) {
                 const valid = await isAccessTokenValid(access_token);
                 if (valid) {
+                    setRoleFromToken(access_token);
                     setScreen("dashboard");
                     return;
                 }
@@ -23,6 +27,7 @@ function App() {
                 const new_token = await refreshAccessToken(refresh_token);
                 if (new_token) {
                     localStorage.setItem("access_token", new_token);
+                    setRoleFromToken(new_token);
                     setScreen("dashboard");
                     return;
                 }
@@ -69,12 +74,38 @@ function App() {
         }
     };
 
+    const decodeJWT = (token) => {
+        try {
+            return JSON.parse(atob(token.split(".")[1]));
+        } catch {
+            return null;
+        }
+    };
+
+    const setRoleFromToken = (token) => {
+        const payload = decodeJWT(token);
+        if (payload && payload.role) {
+            setRole(payload.role);
+        }
+    };
+
     return (
         <>
             {screen === "login" && (
-                <LoginScreen onLogin={() => setScreen("dashboard")} />
+                <LoginScreen
+                    onLogin={() => {
+                        const token = localStorage.getItem("access_token");
+                        setRoleFromToken(token);
+                        setScreen("dashboard");
+                    }}
+                />
             )}
-            {screen === "dashboard" && <div>Welcome to the dashboard!</div>}
+            {screen === "dashboard" && (
+                <>
+                    {role === "user" && <UserDashboard />}
+                    {role === "librarian" && <LibrarianDashboard />}
+                </>
+            )}
         </>
     );
 }
