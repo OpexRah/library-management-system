@@ -1,53 +1,11 @@
-import { useEffect, useState } from "react";
-import BookCard from "./BookCard";
-import HistoryCard from "./HistoryCard";
+import { useState } from "react";
 import { fetchWithAuth } from "../utils/fetchWithAuth";
+import BooksTab from "./BooksTab";
+import IssuedTab from "./IssuedTab";
+import HistoryTab from "./HistoryTab";
 
 function UserDashboard() {
     const [activeTab, setActiveTab] = useState("books");
-    const [books, setBooks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [history, setHistory] = useState([]);
-    const [historyLoading, setHistoryLoading] = useState(true);
-    const [historyError, setHistoryError] = useState(null);
-
-    useEffect(() => {
-        const fetchBooks = async () => {
-            try {
-                const res = await fetchWithAuth("/books");
-                if (!res.ok) throw new Error("Failed to fetch books");
-                const data = await res.json();
-                setBooks(data);
-            } catch (err) {
-                console.error(err);
-                setError("Could not load books.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        const fetchHistory = async () => {
-            try {
-                const res = await fetchWithAuth("/user/view_history");
-                if (!res.ok) throw new Error("Failed to fetch history");
-                const data = await res.json();
-                setHistory(data);
-            } catch (err) {
-                console.error(err);
-                setHistoryError("Could not load history.");
-            } finally {
-                setHistoryLoading(false);
-            }
-        };
-
-        if (activeTab === "books") {
-            fetchBooks();
-        }
-        if (activeTab === "history") {
-            fetchHistory();
-        }
-    }, [activeTab]);
 
     const handleLogout = async () => {
         try {
@@ -65,87 +23,14 @@ function UserDashboard() {
         }
     };
 
-    const handleIssueBook = async (bookId) => {
-        try {
-            const res = await fetchWithAuth("/user/request_book", {
-                method: "POST",
-                body: JSON.stringify({
-                    book_id: bookId,
-                    duration: 7, // hardcoded for now
-                }),
-            });
-
-            if (res.status === 409) {
-                alert("You have already issued this book.");
-                return;
-            }
-
-            if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.message || "Request failed");
-            }
-
-            alert("Book request sent successfully!");
-        } catch (err) {
-            console.error(err);
-            alert("Failed to request book.");
-        }
-    };
-
     const renderTabContent = () => {
         switch (activeTab) {
             case "books":
-                if (loading) return <div>Loading books...</div>;
-                if (error) return <div className="text-red-600">{error}</div>;
-
-                return (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        {books.length === 0 ? (
-                            <div>No books available.</div>
-                        ) : (
-                            books.map((book) => (
-                                <BookCard
-                                    key={book._id}
-                                    id={book._id}
-                                    title={book.title}
-                                    author={book.author}
-                                    quantity={book.quantity}
-                                    onIssue={handleIssueBook}
-                                />
-                            ))
-                        )}
-                    </div>
-                );
+                return <BooksTab />;
             case "issued":
-                return <div> Issued Books (coming soon)</div>;
+                return <IssuedTab />;
             case "history":
-                if (historyLoading) return <div>Loading history...</div>;
-                if (historyError)
-                    return <div className="text-red-600">{historyError}</div>;
-
-                return (
-                    <div className="flex flex-col gap-4">
-                        {history.length === 0 ? (
-                            <div>No history available.</div>
-                        ) : (
-                            history.map((entry) => (
-                                <HistoryCard
-                                    key={entry._id}
-                                    title={
-                                        entry.book_id?.title || "Unknown Title"
-                                    }
-                                    author={
-                                        entry.book_id?.author ||
-                                        "Unknown Author"
-                                    }
-                                    issueDate={entry.issue_date}
-                                    returnDate={entry.return_date}
-                                    approval={entry.approval}
-                                />
-                            ))
-                        )}
-                    </div>
-                );
+                return <HistoryTab />;
             default:
                 return null;
         }
