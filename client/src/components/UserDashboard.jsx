@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import BookCard from "./BookCard";
+import HistoryCard from "./HistoryCard";
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 function UserDashboard() {
@@ -7,6 +8,9 @@ function UserDashboard() {
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [history, setHistory] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(true);
+    const [historyError, setHistoryError] = useState(null);
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -23,8 +27,25 @@ function UserDashboard() {
             }
         };
 
+        const fetchHistory = async () => {
+            try {
+                const res = await fetchWithAuth("/user/view_history");
+                if (!res.ok) throw new Error("Failed to fetch history");
+                const data = await res.json();
+                setHistory(data);
+            } catch (err) {
+                console.error(err);
+                setHistoryError("Could not load history.");
+            } finally {
+                setHistoryLoading(false);
+            }
+        };
+
         if (activeTab === "books") {
             fetchBooks();
+        }
+        if (activeTab === "history") {
+            fetchHistory();
         }
     }, [activeTab]);
 
@@ -79,12 +100,36 @@ function UserDashboard() {
                         )}
                     </div>
                 );
-            case "requests":
-                return <div> Book Requests (coming soon)</div>;
             case "issued":
                 return <div> Issued Books (coming soon)</div>;
             case "history":
-                return <div> History (coming soon)</div>;
+                if (historyLoading) return <div>Loading history...</div>;
+                if (historyError)
+                    return <div className="text-red-600">{historyError}</div>;
+
+                return (
+                    <div className="flex flex-col gap-4">
+                        {history.length === 0 ? (
+                            <div>No history available.</div>
+                        ) : (
+                            history.map((entry) => (
+                                <HistoryCard
+                                    key={entry._id}
+                                    title={
+                                        entry.book_id?.title || "Unknown Title"
+                                    }
+                                    author={
+                                        entry.book_id?.author ||
+                                        "Unknown Author"
+                                    }
+                                    issueDate={entry.issue_date}
+                                    returnDate={entry.return_date}
+                                    approval={entry.approval}
+                                />
+                            ))
+                        )}
+                    </div>
+                );
             default:
                 return null;
         }
@@ -92,19 +137,15 @@ function UserDashboard() {
 
     const tabs = [
         { id: "books", label: "Books" },
-        { id: "requests", label: "Book Requests" },
         { id: "issued", label: "Issued Books" },
         { id: "history", label: "History" },
     ];
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-7xl">
-                <h2 className="text-2xl font-bold mb-6 text-center">
-                    User Dashboard
-                </h2>
-
-                <div className="flex justify-center flex-wrap gap-4 mb-6">
+        <div className="min-h-screen bg-gray-100">
+            {/* Fixed Tab Bar */}
+            <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50 px-4 py-3">
+                <div className="flex justify-center flex-wrap gap-4">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
@@ -119,8 +160,15 @@ function UserDashboard() {
                         </button>
                     ))}
                 </div>
+            </div>
 
-                <div className="bg-gray-50 rounded-md p-4 border">
+            {/* Content (with top padding) */}
+            <div className="pt-24 px-4 max-w-7xl mx-auto">
+                <h2 className="text-2xl font-bold mb-6 text-center">
+                    User Dashboard
+                </h2>
+
+                <div className="bg-white rounded-md p-6 shadow-md">
                     {renderTabContent()}
                 </div>
             </div>
