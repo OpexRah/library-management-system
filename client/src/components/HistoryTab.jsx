@@ -41,6 +41,7 @@ export default function HistoryTab() {
                         issueDate={entry.issue_date}
                         returnDate={entry.return_date}
                         approval={entry.approval}
+                        returnStatus={entry.return_status}
                     />
                 ))
             )}

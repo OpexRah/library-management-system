@@ -1,4 +1,30 @@
-function HistoryCard({ title, author, issueDate, returnDate, approval }) {
+function HistoryCard({
+    title,
+    author,
+    issueDate,
+    returnDate,
+    approval,
+    returnStatus,
+}) {
+    const today = new Date();
+    const expectedReturn = returnDate ? new Date(returnDate) : null;
+
+    let returnText = "";
+    let returnClass = "";
+
+    if (returnStatus) {
+        returnText = "Returned";
+        returnClass = "text-green-600 font-medium";
+    } else if (expectedReturn) {
+        if (expectedReturn >= today) {
+            returnText = `Expected Return: ${expectedReturn.toLocaleDateString()}`;
+            returnClass = "text-yellow-600 font-medium";
+        } else {
+            returnText = `Expected Return: ${expectedReturn.toLocaleDateString()}`;
+            returnClass = "text-red-600 font-medium";
+        }
+    }
+
     return (
         <div className="bg-white p-4 rounded-xl shadow flex justify-between items-center">
             <div>
@@ -8,9 +34,8 @@ function HistoryCard({ title, author, issueDate, returnDate, approval }) {
                     Issued: {new Date(issueDate).toLocaleDateString()}
                 </p>
                 {returnDate && (
-                    <p className="text-sm text-gray-500">
-                        Expected Return:{" "}
-                        {new Date(returnDate).toLocaleDateString()}
+                    <p className={`text-sm mt-1 ${returnClass}`}>
+                        {returnText}
                     </p>
                 )}
             </div>

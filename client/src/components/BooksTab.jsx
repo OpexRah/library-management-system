@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import BookCard from "./BookCard";
 import { fetchWithAuth } from "../utils/fetchWithAuth";
-import { useDebounce } from "../hooks/useDebounce"; // adjust path as needed
+import { useDebounce } from "../hooks/useDebounce";
 
 export default function BooksTab() {
     const [books, setBooks] = useState([]);
@@ -48,11 +48,23 @@ export default function BooksTab() {
 
     const handleIssueBook = async (bookId) => {
         try {
+            const durationInput = window.prompt(
+                "Enter the duration (in days):",
+                "7"
+            );
+            if (!durationInput) return; // Cancelled
+
+            const duration = parseInt(durationInput, 10);
+            if (isNaN(duration) || duration <= 0) {
+                alert("Please enter a valid number of days.");
+                return;
+            }
+
             const res = await fetchWithAuth("/user/request_book", {
                 method: "POST",
                 body: JSON.stringify({
                     book_id: bookId,
-                    duration: 7,
+                    duration,
                 }),
             });
 
