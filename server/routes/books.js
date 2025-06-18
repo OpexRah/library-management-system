@@ -4,7 +4,7 @@ import {
     addBook,
     editBook,
     deleteBook,
-    searchBook
+    searchBook,
 } from "../controllers/booksController.js";
 import protect from "../middlewares/protectRoute.js";
 
@@ -14,6 +14,6 @@ router.get("/", books);
 router.post("/new", protect, addBook);
 router.put("/edit/:bookid", protect, editBook);
 router.delete("/delete/:bookid", protect, deleteBook);
-router.post("/search", searchBook)
+router.get("/search", searchBook);
 
 export default router;
