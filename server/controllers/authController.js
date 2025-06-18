@@ -6,7 +6,7 @@ const generateAccessToken = (user) => {
     return jwt.sign(
         { id: user._id, username: user.username, role: user.role },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "45m" }
+        { expiresIn: "15m" }
     );
 };
 
@@ -14,7 +14,7 @@ const generateRefreshToken = (user) => {
     return jwt.sign(
         { id: user._id, username: user.username, role: user.role },
         process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "2d" }
+        { expiresIn: "1d" }
     );
 };
 
@@ -138,15 +138,15 @@ export const refresh = async (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
         const user = await User.findById(decoded.id);
-        console.log(decoded.id);
+        //console.log(decoded.id);
 
         if (!user || user.refreshToken !== token) {
             return res.status(403).json({ message: "Invalid refresh token" });
         }
 
-        const accessToken = generateAccessToken(decoded);
+        const access_token = generateAccessToken(decoded);
 
-        res.status(200).json({ accessToken });
+        res.status(200).json({ access_token });
     } catch (error) {
         console.error(error);
         return res.status(403).json({ msg: "invalid or expired token" });
@@ -208,7 +208,7 @@ export const createLibrarian = async (req, res, next) => {
 
 export const validate = async (req, res, next) => {
     try {
-        res.json({ expired: false });
+        res.status(200).json({ expired: false });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
