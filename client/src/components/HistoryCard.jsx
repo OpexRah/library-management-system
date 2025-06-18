@@ -18,9 +18,9 @@ function HistoryCard({ title, author, issueDate, returnDate, approval }) {
                 className={`text-sm font-semibold px-3 py-1 rounded-full ${
                     approval === "approved"
                         ? "bg-green-100 text-green-700"
-                        : approval === "rejected"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
+                        : approval === "pending"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-red-100 text-red-700"
                 }`}
             >
                 {approval.charAt(0).toUpperCase() + approval.slice(1)}
