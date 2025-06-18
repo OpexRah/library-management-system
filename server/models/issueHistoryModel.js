@@ -18,6 +18,10 @@ const issueHistorySchema = new mongoose.Schema(
             required: true,
             default: Date.now,
         },
+        return_status: {
+            type: Boolean,
+            default: false,
+        },
         return_date: {
             type: Date,
             default: null,

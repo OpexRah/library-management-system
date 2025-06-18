@@ -272,9 +272,10 @@ export const markReturned = async (req, res, next) => {
             {
                 book_id,
                 issuer_id,
-                approval: "returned",
+                return_status: false,
             },
             {
+                return_status: true,
                 return_date: today,
             }
         );
