@@ -1,34 +1,31 @@
 import { useEffect, useState } from "react";
 import BookCard from "./BookCard";
 import { fetchWithAuth } from "../utils/fetchWithAuth";
-import { useDebounce } from "../hooks/useDebounce"; // adjust path as needed
+import { useDebounce } from "../hooks/useDebounce";
 
-export default function BooksTab() {
+export default function BooksTabLib() {
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const debouncedSearchTerm = useDebounce(searchTerm, 400); // Debounce delay
+    const debouncedSearchTerm = useDebounce(searchTerm, 400);
 
     useEffect(() => {
         const controller = new AbortController();
 
         const fetchBooks = async () => {
-            setLoading(true);
-            setError(null);
             try {
+                setLoading(true);
+                setError(null);
                 const endpoint = debouncedSearchTerm.trim()
                     ? `/books/search?query=${encodeURIComponent(
                           debouncedSearchTerm
                       )}`
                     : "/books";
-
                 const res = await fetchWithAuth(endpoint, {
                     signal: controller.signal,
                 });
-
                 if (!res.ok) throw new Error("Failed to fetch books");
-
                 const data = await res.json();
                 setBooks(data);
             } catch (err) {
@@ -46,36 +43,8 @@ export default function BooksTab() {
         return () => controller.abort();
     }, [debouncedSearchTerm]);
 
-    const handleIssueBook = async (bookId) => {
-        try {
-            const res = await fetchWithAuth("/user/request_book", {
-                method: "POST",
-                body: JSON.stringify({
-                    book_id: bookId,
-                    duration: 7,
-                }),
-            });
-
-            if (res.status === 409) {
-                alert("You have already issued this book.");
-                return;
-            }
-
-            if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.message || "Request failed");
-            }
-
-            alert("Book request sent successfully!");
-        } catch (err) {
-            console.error(err);
-            alert("Failed to request book.");
-        }
-    };
-
     return (
         <div>
-            {/* Search Bar */}
             <div className="mb-6">
                 <input
                     type="text"
@@ -86,13 +55,12 @@ export default function BooksTab() {
                 />
             </div>
 
-            {/* Book Grid */}
             {loading ? (
                 <div>Loading books...</div>
             ) : error ? (
                 <div className="text-red-600">{error}</div>
             ) : books.length === 0 ? (
-                <div>No books found.</div>
+                <div>No books available.</div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {books.map((book) => (
@@ -102,7 +70,6 @@ export default function BooksTab() {
                             title={book.title}
                             author={book.author}
                             quantity={book.quantity}
-                            onIssue={handleIssueBook}
                         />
                     ))}
                 </div>
