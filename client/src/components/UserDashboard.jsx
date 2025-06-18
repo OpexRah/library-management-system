@@ -49,6 +49,22 @@ function UserDashboard() {
         }
     }, [activeTab]);
 
+    const handleLogout = async () => {
+        try {
+            const res = await fetchWithAuth("/auth/logout", { method: "POST" });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.message || "Logout Failed");
+            }
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            window.location.href = "/";
+        } catch (err) {
+            console.error(err);
+            alert("Failed to logout.");
+        }
+    };
+
     const handleIssueBook = async (bookId) => {
         try {
             const res = await fetchWithAuth("/user/request_book", {
@@ -144,8 +160,12 @@ function UserDashboard() {
     return (
         <div className="min-h-screen bg-gray-100">
             {/* Fixed Tab Bar */}
-            <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50 px-4 py-3">
-                <div className="flex justify-center flex-wrap gap-4">
+            <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50 px-6 py-3 flex items-center justify-between">
+                {/* Left Spacer to balance the absolute center */}
+                <div className="w-24" />
+
+                {/* Tabs Centered */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 flex gap-4">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
@@ -160,6 +180,14 @@ function UserDashboard() {
                         </button>
                     ))}
                 </div>
+
+                {/* Logout Button on Right */}
+                <button
+                    onClick={handleLogout}
+                    className="text-red-600 hover:text-red-800 font-medium"
+                >
+                    Logout
+                </button>
             </div>
 
             {/* Content (with top padding) */}
