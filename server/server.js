@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import logger from "./middlewares/logger.js";
+import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
 import connectDB from "./config/db.js";
 import auth from "./routes/auth.js";
@@ -13,6 +14,7 @@ const app = express();
 connectDB();
 
 //middelwares
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger);
