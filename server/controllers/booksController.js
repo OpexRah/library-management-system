@@ -46,7 +46,7 @@ export const addBook = async (req, res, next) => {
 
 export const editBook = async (req, res, next) => {
     try {
-        const { title, author } = req.body;
+        const { title, author, quantity } = req.body;
         const bookId = req.params.bookid;
 
         const userAuthority = req.user.role;
@@ -56,9 +56,9 @@ export const editBook = async (req, res, next) => {
             return next(error);
         }
 
-        if (!title && !author) {
+        if (!title && !author && quantity === undefined) {
             const error = new Error(
-                "Either new title or new author is required"
+                "At least one of title, author, or quantity must be provided"
             );
             error.status = 400;
             return next(error);
@@ -73,6 +73,16 @@ export const editBook = async (req, res, next) => {
 
         if (title) book.title = title;
         if (author) book.author = author;
+        if (quantity !== undefined) {
+            if (isNaN(quantity) || quantity < 0) {
+                const error = new Error(
+                    "Quantity must be a non-negative number"
+                );
+                error.status = 400;
+                return next(error);
+            }
+            book.quantity = quantity;
+        }
 
         const savedBook = await book.save();
         res.status(200).json({
@@ -131,8 +141,8 @@ export const searchBook = async (req, res, next) => {
             deleted: false,
             $or: [
                 { title: { $regex: searchRegex } },
-                { author: { $regex: searchRegex } }
-            ]
+                { author: { $regex: searchRegex } },
+            ],
         });
 
         if (!books || books.length === 0) {
@@ -144,4 +154,4 @@ export const searchBook = async (req, res, next) => {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
     }
-}
+};
