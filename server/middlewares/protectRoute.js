@@ -16,7 +16,9 @@ const protect = (req, res, next) => {
         next();
     } catch (error) {
         console.error(error);
-        return res.status(403).json({ msg: "invalid or expired token" });
+        return res
+            .status(403)
+            .json({ msg: "invalid or expired token", expired: true });
     }
 };
 

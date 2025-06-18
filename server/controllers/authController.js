@@ -205,3 +205,12 @@ export const createLibrarian = async (req, res, next) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const validate = async (req, res, next) => {
+    try {
+        res.json({ expired: false });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
