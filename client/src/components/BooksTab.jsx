@@ -8,7 +8,7 @@ export default function BooksTab() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const debouncedSearchTerm = useDebounce(searchTerm, 400); // Debounce delay
+    const debouncedSearchTerm = useDebounce(searchTerm, 400);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -52,7 +52,7 @@ export default function BooksTab() {
                 "Enter the duration (in days):",
                 "7"
             );
-            if (!durationInput) return; // Cancelled
+            if (!durationInput) return;
 
             const duration = parseInt(durationInput, 10);
             if (isNaN(duration) || duration <= 0) {
@@ -62,10 +62,7 @@ export default function BooksTab() {
 
             const res = await fetchWithAuth("/user/request_book", {
                 method: "POST",
-                body: JSON.stringify({
-                    book_id: bookId,
-                    duration,
-                }),
+                body: JSON.stringify({ book_id: bookId, duration }),
             });
 
             if (res.status === 409) {
@@ -86,25 +83,29 @@ export default function BooksTab() {
     };
 
     return (
-        <div>
+        <div className="p-6 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30">
             {/* Search Bar */}
-            <div className="mb-6">
+            <div className="mb-6 flex justify-center">
                 <input
                     type="text"
                     placeholder="Search books..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full sm:w-96 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full sm:w-96 px-4 py-2 bg-white/60 text-gray-800 rounded-md shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-500"
                 />
             </div>
 
-            {/* Book Grid */}
+            {/* Book Grid or Status */}
             {loading ? (
-                <div>Loading books...</div>
+                <div className="text-center text-gray-700">
+                    Loading books...
+                </div>
             ) : error ? (
-                <div className="text-red-600">{error}</div>
+                <div className="text-center text-red-700 bg-red-100/60 px-4 py-2 rounded-md">
+                    {error}
+                </div>
             ) : books.length === 0 ? (
-                <div>No books found.</div>
+                <div className="text-center text-gray-600">No books found.</div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {books.map((book) => (

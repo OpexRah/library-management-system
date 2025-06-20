@@ -45,7 +45,6 @@ function IssuedBooksList() {
                 throw new Error(err.message || "Failed to mark as returned");
             }
 
-            // Remove returned entry from list
             setIssuedBooks((prev) => prev.filter((e) => e._id !== entry._id));
         } catch (err) {
             console.error(err);
@@ -53,32 +52,40 @@ function IssuedBooksList() {
         }
     };
 
-    if (loading) return <div>Loading issued books...</div>;
-    if (error) return <div className="text-red-600">{error}</div>;
+    if (loading)
+        return (
+            <div className="text-center text-gray-700">
+                Loading issued books...
+            </div>
+        );
+    if (error) return <div className="text-center text-red-600">{error}</div>;
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
             {issuedBooks.length === 0 ? (
-                <div>No books have been issued yet.</div>
+                <div className="text-center text-gray-600">
+                    No books have been issued yet.
+                </div>
             ) : (
                 issuedBooks.map((entry) => (
                     <div
                         key={entry._id}
-                        className="border rounded-xl p-4 bg-white shadow flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center"
+                        className="rounded-2xl border border-white/40 backdrop-blur-sm bg-white/30 shadow-md p-6 flex flex-col gap-4"
                     >
                         <div>
-                            <h3 className="text-lg font-semibold mb-1">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-1">
                                 {entry.book_id?.title || "Untitled Book"}
                             </h3>
                             <p className="text-sm text-gray-700">
-                                Author: {entry.book_id?.author || "Unknown"}
+                                <span className="font-medium">Author:</span>{" "}
+                                {entry.book_id?.author || "Unknown"}
                             </p>
                             <p className="text-sm text-gray-700">
-                                Issued to:{" "}
+                                <span className="font-medium">Issued to:</span>{" "}
                                 {entry.issuer_id?.username || "Unknown"}
                             </p>
                             <p className="text-sm text-gray-600">
-                                Issue Date:{" "}
+                                <span className="font-medium">Issue Date:</span>{" "}
                                 {new Date(entry.createdAt).toLocaleDateString()}
                             </p>
                             <p
@@ -94,16 +101,21 @@ function IssuedBooksList() {
                                 ).toLocaleDateString()}
                             </p>
                             <p className="text-sm text-gray-600">
-                                Fine Per Day: ₹{entry.fine ?? 0}
+                                <span className="font-medium">
+                                    Fine Per Day:
+                                </span>{" "}
+                                ₹{entry.fine ?? 0}
                             </p>
                         </div>
 
-                        <button
-                            onClick={() => handleMarkAsReturned(entry)}
-                            className="self-center px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
-                        >
-                            Mark Returned
-                        </button>
+                        <div className="text-right">
+                            <button
+                                onClick={() => handleMarkAsReturned(entry)}
+                                className="px-4 py-2 text-sm font-semibold rounded-xl bg-blue-600 text-white shadow hover:bg-blue-700 transition"
+                            >
+                                Mark Returned
+                            </button>
+                        </div>
                     </div>
                 ))
             )}

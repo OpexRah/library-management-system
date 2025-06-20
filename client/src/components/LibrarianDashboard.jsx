@@ -27,7 +27,7 @@ function LibrarianDashboard() {
     const renderTabContent = () => {
         switch (activeTab) {
             case "books":
-                return <BooksTabLib />; // simplified
+                return <BooksTabLib />;
             case "issued":
                 return <IssuedBooksList />;
             case "requests":
@@ -47,9 +47,9 @@ function LibrarianDashboard() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            {/* Fixed Tab Bar */}
-            <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50 px-6 py-3 flex items-center justify-between">
+        <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
+            {/* Crystal Tab Bar */}
+            <div className="fixed top-0 left-0 right-0 px-6 py-4 z-50 flex items-center justify-between backdrop-blur-md bg-white/30 border-b border-white/50 shadow-sm">
                 <div className="w-24" />
 
                 <div className="absolute left-1/2 transform -translate-x-1/2 flex gap-4">
@@ -57,10 +57,10 @@ function LibrarianDashboard() {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                            className={`px-4 py-2 rounded-xl font-medium backdrop-blur-sm transition-all duration-200 ${
                                 activeTab === tab.id
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                                    ? "bg-blue-600 text-white shadow-md"
+                                    : "bg-white/40 text-gray-700 hover:bg-white/60"
                             }`}
                         >
                             {tab.label}
@@ -70,19 +70,19 @@ function LibrarianDashboard() {
 
                 <button
                     onClick={handleLogout}
-                    className="text-red-600 hover:text-red-800 font-medium"
+                    className="text-red-600 hover:text-red-800 font-semibold transition"
                 >
                     Logout
                 </button>
             </div>
 
             {/* Content */}
-            <div className="pt-24 px-4 max-w-7xl mx-auto">
-                <h2 className="text-2xl font-bold mb-6 text-center">
+            <div className="pt-28 px-4 max-w-7xl mx-auto">
+                <h2 className="text-3xl font-bold mb-8 text-center text-gray-700 drop-shadow-sm">
                     Librarian Dashboard
                 </h2>
 
-                <div className="bg-white rounded-md p-6 shadow-md">
+                <div className="backdrop-blur-lg bg-white/40 border border-white/50 rounded-3xl p-6 shadow-xl">
                     {renderTabContent()}
                 </div>
             </div>

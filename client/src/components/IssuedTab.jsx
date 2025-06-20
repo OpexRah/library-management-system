@@ -12,7 +12,6 @@ function IssuedTab() {
                 const res = await fetchWithAuth("/user/view_issued");
                 if (!res.ok) throw new Error("Failed to fetch issued books");
                 const data = await res.json();
-                console.log(data);
                 setIssuedBooks(data);
             } catch (err) {
                 console.error(err);
@@ -25,46 +24,67 @@ function IssuedTab() {
         fetchIssuedBooks();
     }, []);
 
-    if (loading) return <div>Loading issued books...</div>;
-    if (error) return <div className="text-red-600">{error}</div>;
+    if (loading) {
+        return (
+            <div className="text-center text-gray-700 py-6">
+                Loading issued books...
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="text-center text-red-700 bg-red-100/70 px-4 py-2 rounded-lg">
+                {error}
+            </div>
+        );
+    }
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {issuedBooks.length === 0 ? (
-                <div>No books have been issued yet.</div>
+                <div className="col-span-full text-center text-gray-600">
+                    No books have been issued yet.
+                </div>
             ) : (
-                issuedBooks.map((entry) => (
-                    <div
-                        key={entry._id}
-                        className="border rounded-lg p-4 bg-gray-50 shadow-sm"
-                    >
-                        <div className="font-semibold">
-                            {entry.book_id?.title || "Untitled Book"}
-                        </div>
-                        <div className="text-sm text-gray-600 mb-1">
-                            Author: {entry.book_id?.author || "Unknown"}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                            Issue Date:{" "}
-                            {new Date(entry.createdAt).toLocaleDateString()}
-                        </div>
+                issuedBooks.map((entry) => {
+                    const isOverdue =
+                        new Date(entry.expected_return) < new Date();
+
+                    return (
                         <div
-                            className={`text-sm ${
-                                new Date(entry.expected_return) < new Date()
-                                    ? "text-red-600"
-                                    : "text-gray-600"
-                            }`}
+                            key={entry._id}
+                            className="bg-white/70 backdrop-blur-sm border border-gray-300 rounded-xl p-5 shadow-md hover:shadow-lg transition"
                         >
-                            Expected Return:{" "}
-                            {new Date(
-                                entry.expected_return
-                            ).toLocaleDateString()}
+                            <h3 className="text-lg font-semibold mb-1 text-gray-800">
+                                {entry.book_id?.title || "Untitled Book"}
+                            </h3>
+                            <p className="text-sm text-gray-600 mb-2">
+                                Author: {entry.book_id?.author || "Unknown"}
+                            </p>
+                            <p className="text-sm text-gray-700">
+                                <span className="font-medium">Issue Date:</span>{" "}
+                                {new Date(entry.createdAt).toLocaleDateString()}
+                            </p>
+                            <p
+                                className={`text-sm font-medium ${
+                                    isOverdue ? "text-red-600" : "text-gray-700"
+                                }`}
+                            >
+                                Expected Return:{" "}
+                                {new Date(
+                                    entry.expected_return
+                                ).toLocaleDateString()}
+                            </p>
+                            <p className="text-sm text-gray-700">
+                                Fine Per Day:{" "}
+                                <span className="font-semibold">
+                                    ₹{entry.fine ?? 0}
+                                </span>
+                            </p>
                         </div>
-                        <div className="text-sm text-gray-600">
-                            Fine Per Day: ₹{entry.fine ?? 0}
-                        </div>
-                    </div>
-                ))
+                    );
+                })
             )}
         </div>
     );

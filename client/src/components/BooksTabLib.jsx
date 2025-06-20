@@ -22,6 +22,7 @@ export default function BooksTabLib() {
                           debouncedSearchTerm
                       )}`
                     : "/books";
+
                 const res = await fetchWithAuth(endpoint, {
                     signal: controller.signal,
                 });
@@ -39,28 +40,35 @@ export default function BooksTabLib() {
         };
 
         fetchBooks();
-
         return () => controller.abort();
     }, [debouncedSearchTerm]);
 
     return (
-        <div>
-            <div className="mb-6">
+        <div className="backdrop-blur-lg bg-white/30 border border-white/40 rounded-2xl p-6 shadow-xl">
+            {/* Search bar */}
+            <div className="mb-6 flex justify-center w-full">
                 <input
                     type="text"
                     placeholder="Search books..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full sm:w-96 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full sm:w-96 px-4 py-2 bg-white/50 text-gray-800 rounded-lg shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-300 backdrop-blur-sm placeholder-gray-600"
                 />
             </div>
 
+            {/* Book Grid or Status */}
             {loading ? (
-                <div>Loading books...</div>
+                <div className="text-center text-gray-700">
+                    Loading books...
+                </div>
             ) : error ? (
-                <div className="text-red-600">{error}</div>
+                <div className="text-center text-red-700 bg-red-100/60 px-4 py-2 rounded-md">
+                    {error}
+                </div>
             ) : books.length === 0 ? (
-                <div>No books available.</div>
+                <div className="text-center text-gray-600">
+                    No books available.
+                </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {books.map((book) => (
