@@ -58,6 +58,21 @@ export const approveRequest = async (req, res, next) => {
             return next(error);
         }
 
+        const issuer = await User.findById(requestDetails.issuer);
+        if (!issuer) {
+            const error = new Error("Issuer not found");
+            error.status = 404;
+            return next(error);
+        }
+
+        if (issuer.pending_fine > 0) {
+            const error = new Error(
+                "Cannot approve request: issuer has pending fines"
+            );
+            error.status = 403;
+            return next(error);
+        }
+
         if (requestDetails.book_id.quantity <= 0) {
             const error = new Error("No more books available");
             error.status = 400;
