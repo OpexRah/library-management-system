@@ -6,6 +6,7 @@ import {
     viewPrevIssuedBooks,
     viewRejectedRequests,
     payFines,
+    profile,
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.get("/view_issued", protect, viewIssuedBooks);
 router.get("/view_history", protect, viewPrevIssuedBooks);
 router.get("/view_rejected", protect, viewRejectedRequests);
 router.post("/pay_fines", protect, payFines);
+router.get("/profile", protect, profile);
 
 export default router;

@@ -15,6 +15,21 @@ export const requestBook = async (req, res, next) => {
             return next(error);
         }
 
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            const error = new Error("User not found");
+            error.status = 404;
+            return next(error);
+        }
+
+        if (user.pending_fine > 0) {
+            const error = new Error(
+                "You have pending fines. Clear them before requesting a book."
+            );
+            error.status = 403;
+            return next(error);
+        }
+
         const book = await Books.findById(book_id);
         if (book.deleted) {
             const error = new Error("This book is not available");
@@ -111,6 +126,40 @@ export const payFines = async (req, res, next) => {
         await user.save();
 
         res.status(200).json({ message: "Fine paid successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const profile = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId);
+
+        if (!user) {
+            const error = new Error("User not found");
+            error.status = 404;
+            return next(error);
+        }
+
+        const pendingFines = user.pending_fine;
+        const username = user.username;
+
+        const totalIssued = await IssueHistory.countDocuments({
+            issuer_id: userId,
+        });
+
+        const currentlyIssued = await IssuedBooks.countDocuments({
+            issuer_id: userId,
+        });
+
+        return res.status(200).json({
+            username,
+            pending_fine: pendingFines,
+            total_issued_books: totalIssued,
+            currently_issued_books: currentlyIssued,
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
