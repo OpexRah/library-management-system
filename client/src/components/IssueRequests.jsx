@@ -40,9 +40,13 @@ function IssueRequests() {
                     }),
                 });
 
-                if (!res.ok) throw new Error("Approval failed");
+                if (!res.ok) {
+                    const data = await res.json();
+                    //console.log(data);
+                    alert(data.msg || "Approve failed");
+                    return;
+                }
                 alert(`Approved request ${requestId} with fine: ${fine}`);
-                // Optionally refresh the list after approval
                 fetchRequests();
             } catch (err) {
                 console.error(err);

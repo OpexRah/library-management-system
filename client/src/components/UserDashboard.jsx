@@ -3,6 +3,7 @@ import { fetchWithAuth } from "../utils/fetchWithAuth";
 import BooksTab from "./BooksTab";
 import IssuedTab from "./IssuedTab";
 import HistoryTab from "./HistoryTab";
+import UserProfile from "./UserProfile";
 
 function UserDashboard() {
     const [activeTab, setActiveTab] = useState("books");
@@ -31,6 +32,8 @@ function UserDashboard() {
                 return <IssuedTab />;
             case "history":
                 return <HistoryTab />;
+            case "profile":
+                return <UserProfile />;
             default:
                 return null;
         }
@@ -40,6 +43,7 @@ function UserDashboard() {
         { id: "books", label: "Books" },
         { id: "issued", label: "Issued Books" },
         { id: "history", label: "History" },
+        { id: "profile", label: "Profile" },
     ];
 
     return (

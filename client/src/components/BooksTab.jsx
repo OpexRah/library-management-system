@@ -65,20 +65,17 @@ export default function BooksTab() {
                 body: JSON.stringify({ book_id: bookId, duration }),
             });
 
-            if (res.status === 409) {
-                alert("You have already issued this book.");
-                return;
-            }
+            const data = await res.json();
 
             if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.message || "Request failed");
+                alert(data.msg || "Request failed");
+                return;
             }
 
             alert("Book request sent successfully!");
         } catch (err) {
             console.error(err);
-            alert("Failed to request book.");
+            alert("Failed to request book");
         }
     };
 
