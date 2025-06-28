@@ -4,6 +4,7 @@ import IssuedBooksList from "./IssuedBooksList";
 import IssueRequests from "./IssueRequests";
 import ManageBooks from "./ManageBooks";
 import BooksTabLib from "./BooksTabLib";
+import DefaultersList from "./DefaultersList";
 
 function LibrarianDashboard() {
     const [activeTab, setActiveTab] = useState("books");
@@ -34,6 +35,8 @@ function LibrarianDashboard() {
                 return <IssueRequests />;
             case "manage":
                 return <ManageBooks />;
+            case "defaulters":
+                return <DefaultersList />;
             default:
                 return null;
         }
@@ -44,6 +47,7 @@ function LibrarianDashboard() {
         { id: "issued", label: "Issued Books" },
         { id: "requests", label: "Issue Requests" },
         { id: "manage", label: "Manage Books" },
+        { id: "defaulters", label: "Defaulters" },
     ];
 
     return (
