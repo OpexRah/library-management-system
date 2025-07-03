@@ -3,7 +3,12 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
 
 // File type whitelist
-const allowedMimeTypes = ["image/jpeg", "image/png", "application/pdf"];
+const allowedMimeTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "application/pdf",
+];
 
 const storage = new CloudinaryStorage({
     cloudinary,
