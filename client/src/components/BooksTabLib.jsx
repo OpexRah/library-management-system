@@ -77,6 +77,8 @@ export default function BooksTabLib() {
                             id={book._id}
                             title={book.title}
                             author={book.author}
+                            coverImage={book.coverImage}
+                            bookPdf={book.bookPdf}
                             quantity={book.quantity}
                         />
                     ))}

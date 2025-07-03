@@ -348,34 +348,45 @@ function ManageBooks() {
                 {books.map((book) => (
                     <div
                         key={book._id}
-                        className="border p-4 rounded shadow-sm bg-gray-50 flex justify-between items-center"
+                        className="border p-4 rounded shadow-sm bg-gray-50 flex gap-4 items-center"
                     >
-                        <div>
-                            <h4 className="font-semibold">{book.title}</h4>
-                            <p className="text-sm text-gray-600">
-                                {book.author}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                                Quantity: {book.quantity}
-                            </p>
+                        <div className="w-24 h-36 flex items-center justify-center bg-white border rounded overflow-hidden">
+                            <img
+                                src={book.coverImage}
+                                alt={`${book.title} cover`}
+                                className="object-contain max-h-full max-w-full"
+                            />
                         </div>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => {
-                                    setEditingBook(book);
-                                    setEditError(null);
-                                    setShowEditModal(true);
-                                }}
-                                className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                            >
-                                Edit
-                            </button>
-                            <button
-                                onClick={() => handleDeleteBook(book._id)}
-                                className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition"
-                            >
-                                Delete
-                            </button>
+
+                        <div className="flex-1 flex justify-between items-start">
+                            <div>
+                                <h4 className="font-semibold">{book.title}</h4>
+                                <p className="text-sm text-gray-600">
+                                    {book.author}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                    Quantity: {book.quantity}
+                                </p>
+                            </div>
+
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => {
+                                        setEditingBook(book);
+                                        setEditError(null);
+                                        setShowEditModal(true);
+                                    }}
+                                    className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteBook(book._id)}
+                                    className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition"
+                                >
+                                    Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                 ))}

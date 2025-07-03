@@ -30,6 +30,7 @@ export default function BooksTab() {
                 if (!res.ok) throw new Error("Failed to fetch books");
 
                 const data = await res.json();
+                console.log(data);
                 setBooks(data);
             } catch (err) {
                 if (err.name !== "AbortError") {
@@ -112,6 +113,8 @@ export default function BooksTab() {
                             title={book.title}
                             author={book.author}
                             quantity={book.quantity}
+                            coverImage={book.coverImage}
+                            bookpdf={book.bookPdf}
                             onIssue={handleIssueBook}
                         />
                     ))}

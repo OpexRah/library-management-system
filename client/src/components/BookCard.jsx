@@ -1,8 +1,32 @@
-function BookCard({ id, title, author, quantity, onIssue }) {
+function BookCard({
+    id,
+    title,
+    author,
+    quantity,
+    coverImage,
+    bookPdf,
+    onIssue,
+}) {
     const isAvailable = quantity > 0;
+
+    const handleCoverClick = () => {
+        if (bookPdf) {
+            window.open(bookPdf, "_blank");
+        }
+    };
 
     return (
         <div className="bg-white/30 backdrop-blur-lg border border-white/40 p-5 rounded-2xl shadow-xl transition-all hover:shadow-2xl flex flex-col justify-between h-full">
+            <div className="cursor-pointer mb-4" onClick={handleCoverClick}>
+                <div className="w-full h-64 flex items-center justify-center bg-white/50 rounded-xl shadow-md overflow-hidden">
+                    <img
+                        src={coverImage}
+                        alt={`${title} cover`}
+                        className="max-h-full max-w-full object-contain"
+                    />
+                </div>
+            </div>
+
             <div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-1 drop-shadow-sm">
                     {title}
