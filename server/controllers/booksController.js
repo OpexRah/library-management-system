@@ -18,8 +18,9 @@ export const books = async (req, res, next) => {
 export const addBook = async (req, res, next) => {
     try {
         const { title, author, quantity } = req.body;
+
         if (!title || !author || !quantity) {
-            const error = new Error("Title, Author and quantity are required");
+            const error = new Error("Title, Author and Quantity are required");
             error.status = 400;
             return next(error);
         }
@@ -31,7 +32,23 @@ export const addBook = async (req, res, next) => {
             return next(error);
         }
 
-        const newBook = new Books({ title, author, quantity });
+        if (!req.files || !req.files.coverImage || !req.files.bookPdf) {
+            const error = new Error("Cover image and book PDF are required");
+            error.status = 400;
+            return next(error);
+        }
+
+        const coverImageUrl = req.files.coverImage[0].path;
+        const bookPdfUrl = req.files.bookPdf[0].path;
+
+        const newBook = new Books({
+            title,
+            author,
+            quantity,
+            coverImage: coverImageUrl,
+            bookPdf: bookPdfUrl,
+        });
+
         const savedBook = await newBook.save();
 
         res.status(201).json({
@@ -39,7 +56,7 @@ export const addBook = async (req, res, next) => {
             book: savedBook,
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error in addBook:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };

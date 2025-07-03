@@ -18,6 +18,8 @@ const booksSchema = mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        coverImage: { type: String },
+        bookPdf: { type: String },
     },
     { timestamps: true }
 );
