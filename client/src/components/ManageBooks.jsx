@@ -10,6 +10,8 @@ function ManageBooks() {
         title: "",
         author: "",
         quantity: "",
+        coverImage: null,
+        bookPdf: null,
     });
     const [adding, setAdding] = useState(false);
     const [addError, setAddError] = useState(null);
@@ -37,25 +39,27 @@ function ManageBooks() {
     }, []);
 
     const handleAddBook = async () => {
-        if (!newBook.title || !newBook.author || !newBook.quantity) {
-            setAddError("All fields are required.");
+        const { title, author, quantity, coverImage, bookPdf } = newBook;
+
+        if (!title || !author || !quantity || !coverImage || !bookPdf) {
+            setAddError("All fields, including files, are required.");
             return;
         }
 
         setAdding(true);
         setAddError(null);
 
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("author", author);
+        formData.append("quantity", quantity);
+        formData.append("coverImage", coverImage);
+        formData.append("bookPdf", bookPdf);
+
         try {
             const res = await fetchWithAuth("/books/new", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    title: newBook.title,
-                    author: newBook.author,
-                    quantity: Number(newBook.quantity),
-                }),
+                body: formData,
             });
 
             if (!res.ok) {
@@ -71,20 +75,18 @@ function ManageBooks() {
             setAddError(err.message);
         } finally {
             setAdding(false);
+            fetchBooks();
         }
-        fetchBooks();
     };
 
     const handleUpdateBook = async () => {
         const { title, author, quantity, _id } = editingBook;
 
-        // Build payload dynamically
         const updatePayload = {};
         if (title) updatePayload.title = title;
         if (author) updatePayload.author = author;
         if (quantity !== "") updatePayload.quantity = Number(quantity);
 
-        // Require at least one field
         if (Object.keys(updatePayload).length === 0) {
             setEditError("Please provide at least one field to update.");
             return;
@@ -144,9 +146,10 @@ function ManageBooks() {
     return (
         <div className="space-y-6">
             <h3 className="text-xl font-bold">Manage Books</h3>
+
             {/* Add Book Modal */}
             {showAddModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-gray-300/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
                         <h4 className="text-lg font-semibold mb-4">
                             Add New Book
@@ -156,7 +159,14 @@ function ManageBooks() {
                             <p className="text-red-600 mb-2">{addError}</p>
                         )}
 
-                        <div className="space-y-3">
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleAddBook();
+                            }}
+                            className="space-y-3"
+                            encType="multipart/form-data"
+                        >
                             <input
                                 type="text"
                                 placeholder="Title"
@@ -193,27 +203,60 @@ function ManageBooks() {
                                     })
                                 }
                             />
-                        </div>
-
-                        <div className="flex justify-end gap-2 mt-4">
-                            <button
-                                onClick={() => setShowAddModal(false)}
-                                className="px-4 py-2 rounded border"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleAddBook}
-                                disabled={adding}
-                                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-                            >
-                                {adding ? "Adding..." : "Add Book"}
-                            </button>
-                        </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Cover Image
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="w-full border p-2 rounded"
+                                    onChange={(e) =>
+                                        setNewBook({
+                                            ...newBook,
+                                            coverImage: e.target.files[0],
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Book PDF
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    className="w-full border p-2 rounded"
+                                    onChange={(e) =>
+                                        setNewBook({
+                                            ...newBook,
+                                            bookPdf: e.target.files[0],
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2 mt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAddModal(false)}
+                                    className="px-4 py-2 rounded border"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={adding}
+                                    className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    {adding ? "Adding..." : "Add Book"}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
 
+            {/* Edit Book Modal */}
             {showEditModal && editingBook && (
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
@@ -280,11 +323,17 @@ function ManageBooks() {
                 </div>
             )}
 
-            {/* Placeholder for Add Book button */}
+            {/* Add Book Button */}
             <div>
                 <button
                     onClick={() => {
-                        setNewBook({ title: "", author: "", quantity: "" });
+                        setNewBook({
+                            title: "",
+                            author: "",
+                            quantity: "",
+                            coverImage: null,
+                            bookPdf: null,
+                        });
                         setAddError(null);
                         setShowAddModal(true);
                     }}
@@ -294,7 +343,7 @@ function ManageBooks() {
                 </button>
             </div>
 
-            {/* List of books (simplified view) */}
+            {/* Book List */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {books.map((book) => (
                     <div
@@ -321,7 +370,6 @@ function ManageBooks() {
                             >
                                 Edit
                             </button>
-
                             <button
                                 onClick={() => handleDeleteBook(book._id)}
                                 className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition"
