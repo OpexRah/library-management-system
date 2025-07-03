@@ -270,7 +270,7 @@ export const markReturned = async (req, res, next) => {
         const today = Date.now();
         const dueDate = new Date(issued_book.expected_return);
         const msInDay = 1000 * 60 * 60 * 24;
-        const diffDays = Math.ceil((today - dueDate) / msInDay);
+        const diffDays = Math.floor((today - dueDate) / msInDay);
         const fine = diffDays > 0 ? diffDays * fine_rate : 0;
         console.log(fine);
         if (fine > 0) {
