@@ -19,12 +19,12 @@ app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 app.use(logger);
 
-app.use("/auth", auth);
-app.use("/books", books);
-app.use("/user", user);
-app.use("/librarian", librarian);
+app.use("/api/auth", auth);
+app.use("/api/books", books);
+app.use("/api/user", user);
+app.use("/api/librarian", librarian);
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
     res.send("Server is up and running");
 });
 
