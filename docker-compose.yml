@@ -5,7 +5,7 @@ services:
     build:
       context: ./server
       args:
-        VITE_API_URL: https://library.imopex.space/api
+        VITE_BACKEND_URL: https://library.imopex.space/api
     ports:
       - "3000:3000"
     restart: unless-stopped
