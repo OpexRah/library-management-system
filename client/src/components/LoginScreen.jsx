@@ -12,6 +12,7 @@ function LoginScreen({ onLogin }) {
         setError("");
 
         try {
+            console.log(`${BACKEND_URL}/auth/login`);
             const response = await fetch(`${BACKEND_URL}/auth/login`, {
                 method: "POST",
                 headers: {
