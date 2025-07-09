@@ -114,7 +114,7 @@ export default function BooksTab() {
                             author={book.author}
                             quantity={book.quantity}
                             coverImage={book.coverImage}
-                            bookpdf={book.bookPdf}
+                            bookPdf={book.bookPdf}
                             onIssue={handleIssueBook}
                         />
                     ))}
